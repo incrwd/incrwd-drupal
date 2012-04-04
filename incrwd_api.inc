@@ -1,4 +1,5 @@
 <?php
+//Copy from incrwd-wordpress plugin
 
 module_load_include('inc', 'incrwd', 'incrwd_utils');
 

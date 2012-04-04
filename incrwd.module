@@ -12,7 +12,7 @@
 module_load_include('inc', 'incrwd', 'incrwd_utils');
 module_load_include('inc', 'incrwd', 'incrwd_api');
 
-define('INCRWD_DEBUG', True);
+define('INCRWD_DEBUG', False);
 
 function incrwd_help($path, $arg) {
   switch ($path) {
@@ -33,12 +33,12 @@ function incrwd_page_alter(&$page) {
             $script = 'var _icq = _icq || [];';
             $script .= 'var incrwd_config = {';
             $script .= '  site_id: ' . variable_get('incrwd_id', 0) . ',';
-            $script .= '  remote_auth: "' . incrwd_sso() . '"';
+            //$script .= '  remote_auth: "' . incrwd_sso() . '",';
             $script .= '};';
             if (!INCRWD_DEBUG) {
               $script .= '(function() {';
               $script .= '  var ic = document.createElement("script"); ic.type = "text/javascript"; ic.async = true;';
-              $script .= "  ic.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + 'static.widget.myincrwd.com/incrwd.js';";
+              $script .= '  ic.src = "http://static.widget.myincrwd.com/incrwd.js";';
               $script .= '  var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(ic, s);';
               $script .= '})();';
             }
@@ -89,7 +89,7 @@ function incrwd_form($form, &$form_state) {
   $form['incrwd_enable_rewards'] = array(
     '#type' => 'checkbox',
     '#title' => t('Enable rewards'),
-    '#default_value' => variable_get('incrwd_enable_rewards', true),
+    '#default_value' => variable_get('incrwd_enable_rewards', false),
     '#description' => t('Enables the loyalty program.'),
   );
 

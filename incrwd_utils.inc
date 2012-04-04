@@ -17,16 +17,16 @@ function incrwd_encode_arr($arr) {
 // Single sign-on integration
 function incrwd_sso() {
   global $user;
-  /*if ($user->uid) {
+  //if ($user->uid) {
     //$avatar = theme('user_picture', array('account' => user_load($user->uid)));
-    $user_data = array(
-      'username' => $user->name,
-      'id' => intval($user->uid),
+    //$user_data = array(
+      //'username' => $user->name,
+      //'id' => intval($user->uid),
       //'avatar' => $avatar,
-      'email' => $user->mail,
-    );
-  }
-  else {*/
+      //'email' => $user->mail,
+    //);
+  //}
+  //else {
     $user_data = array();
   //}
   return incrwd_encode_arr($user_data);
