@@ -1,0 +1,115 @@
+<?php
+/**
+ * Implements hook_help.
+ *
+ * Displays help and module information.
+ *
+ * @param path
+ *   Which path of the site we're using to display help
+ * @param arg
+ *   Array that holds the current path as returned from arg() function
+ */
+module_load_include('inc', 'incrwd', 'incrwd_utils');
+module_load_include('inc', 'incrwd', 'incrwd_api');
+
+define('INCRWD_DEBUG', True);
+
+function incrwd_help($path, $arg) {
+  switch ($path) {
+    case "admin/help#incrwd":
+      return '<p>'.  t("Add the incrwd snippets and reward/badge enables the comments") .'</p>';
+      break;
+  }
+}
+
+function incrwd_page_alter(&$page) {
+    $mode = 'parent';
+    if (module_exists('overlay')) {
+        $mode = overlay_get_mode();
+    }
+
+    if ($mode != 'child') {
+        if (variable_get('incrwd_enable_rewards')) {
+            $script = 'var _icq = _icq || [];';
+            $script .= 'var incrwd_config = {';
+            $script .= '  site_id: ' . variable_get('incrwd_id', 0) . ',';
+            $script .= '  remote_auth: "' . incrwd_sso() . '"';
+            $script .= '};';
+            if (!INCRWD_DEBUG) {
+              $script .= '(function() {';
+              $script .= '  var ic = document.createElement("script"); ic.type = "text/javascript"; ic.async = true;';
+              $script .= "  ic.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + 'static.widget.myincrwd.com/incrwd.js';";
+              $script .= '  var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(ic, s);';
+              $script .= '})();';
+            }
+            drupal_add_js($script, array('scope' => 'footer', 'type' => 'inline'));
+            if (INCRWD_DEBUG) {
+              drupal_add_js('http://incrwd.example.com:8000/w/bootloader.js', array('scope' => 'footer'));  
+            }
+        }
+    }
+}
+
+function incrwd_menu() {
+  $items = array();
+
+  $items['admin/config/system/incrwd'] = array(
+    'title' => 'incrwd',
+    'description' => 'Configuration of incrwd rewards/achievement settings',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('incrwd_form'),
+    'access arguments' => array('access administration incrwd'),
+    'type' => MENU_NORMAL_ITEM,
+  );
+
+  return $items;
+}
+
+function incrwd_form($form, &$form_state) {
+  $form['incrwd_id'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Your Id'),
+    '#default_value' => variable_get('incrwd_id', ''),
+    '#size' => 127,
+    '#maxlength' => 127,
+    '#description' => t('The id you got from http://www.incrwd.com.'),
+    '#required' => TRUE,
+  );
+
+  $form['incrwd_key'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Your Secret Key'),
+    '#default_value' => variable_get('incrwd_key', ''),
+    '#size' => 127,
+    '#maxlength' => 127,
+    '#description' => t('The key you got from http://www.incrwd.com.'),
+    '#required' => TRUE,
+  );
+
+  $form['incrwd_enable_rewards'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Enable rewards'),
+    '#default_value' => variable_get('incrwd_enable_rewards', true),
+    '#description' => t('Enables the loyalty program.'),
+  );
+
+  return system_settings_form($form);
+}
+
+function incrwd_get_api() {
+  return new IncrwdApi(
+    variable_get('incrwd_id', ''),
+    variable_get('incrwd_key', ''),
+    INCRWD_DEBUG ? 'http://incrwd.example.com/w/api/' : 'http://widget.myincrwd.com/w/api/');
+}
+
+function incrwd_comment_insert($comment) {
+  $api = incrwd_get_api();
+  $api->approved_comment_left($comment->cid);
+  //$api->insert_comment_left($comment->cid);
+}
+
+function incrwd_comment_publish($comment) {
+  //$api = incrwd_get_api();
+  //$api->approved_comment_left($comment->cid);
+}

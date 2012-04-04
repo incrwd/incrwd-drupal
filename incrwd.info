@@ -1,0 +1,6 @@
+name = Incrwd
+description = Add the incrwd snippet for the loyalty program and/or the achievement program
+core = 7.x
+package = Incrwd
+configure = admin/config/system/incrwd
+version = 1.0
