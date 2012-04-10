@@ -23,7 +23,7 @@ function incrwd_help($path, $arg) {
 }
 
 function incrwd_footer($main=0) {
-  if (variable_get('incrwd_enable_rewards')) {
+  if (variable_get('incrwd_enable_rewards', null)) {
     $script = 'var _icq = _icq || [];';
     $script .= 'var incrwd_config = {';
     $script .= '  site_id: ' . variable_get('incrwd_id', 0) . ',';
@@ -35,18 +35,17 @@ function incrwd_footer($main=0) {
       $script .= '  ic.src = "http://static.widget.myincrwd.com/incrwd.js";';
       $script .= '  var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(ic, s);';
       $script .= '})();';
+    } else {
+      $script .= 'document.write(unescape("%3Cscript src=\'http://incrwd.example.com:8000/w/bootloader.js\' type=\'text/javascript\'%3E%3C/script%3E"));';
     }
-    drupal_add_js($script, array('scope' => 'footer', 'type' => 'inline'));
-    if (INCRWD_DEBUG) {
-      drupal_add_js('http://incrwd.example.com:8000/w/bootloader.js', array('scope' => 'footer'))
-    }
+    drupal_add_js($script, 'inline', 'footer');
   }
 }
 
 function incrwd_menu() {
   $items = array();
   $items['admin/settings/incrwd'] = array(
-    'title' => 'incrwd',
+    'title' => 'Incrwd',
     'description' => 'Configuration of incrwd rewards/achievement settings',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('incrwd_form'),
@@ -56,7 +55,7 @@ function incrwd_menu() {
   return $items;
 }
 
-function incrwd_form($form, &$form_state) {
+function incrwd_form() {
   $form['incrwd_id'] = array(
     '#type' => 'textfield',
     '#title' => t('Your Id'),
@@ -97,6 +96,6 @@ function incrwd_get_api() {
 function incrwd_comment(&$comment, $op) {
   if ($op == 'publish') {
     $api = incrwd_get_api();
-   i $api->approved_comment_left($comment->cid);
+    $api->approved_comment_left($comment['cid']);
   }
 }

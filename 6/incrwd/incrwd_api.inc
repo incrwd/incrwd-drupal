@@ -39,9 +39,9 @@ class IncrwdApi {
       "args" => incrwd_encode_arr($args));
     $response = drupal_http_request(
       $url,
-      array(
-        'method' => 'POST',
-        'data' => http_build_query($real_args)));
+      array(),
+      'POST',
+      http_build_query($real_args));
     if ($response->code != 200) {
       return -1;
     } else {
