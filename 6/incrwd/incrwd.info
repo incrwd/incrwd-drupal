@@ -1,0 +1,5 @@
+name = Incrwd
+description = Add the incrwd snippet for the loyalty program and/or the achievement program
+core = 6.x
+package = Incrwd
+version = 1.0
