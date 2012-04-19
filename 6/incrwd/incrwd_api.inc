@@ -14,10 +14,15 @@ class IncrwdApi {
     $this->api_url = $api_url;
   }
 
-  function approved_comment_left($comment_id) {
-    $this->call("approved_comment", 
+  function inserted_comment($comment_id) {
+    $this->call("inserted_comment", 
                 array("comment_id" => $comment_id,
                       "remote_cookie" => $_COOKIE["__ic"]));
+  }
+
+  function published_comment($comment_id) {
+    $this->call("published_comment", 
+                array("comment_id" => $comment_id));
   }
 
   /**

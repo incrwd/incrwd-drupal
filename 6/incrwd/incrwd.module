@@ -94,8 +94,11 @@ function incrwd_get_api() {
 }
 
 function incrwd_comment(&$comment, $op) {
-  if ($op == 'publish') {
+  if ($op == 'insert') {
     $api = incrwd_get_api();
-    $api->approved_comment_left($comment['cid']);
+    $api->inserted_comment($comment['cid']);    
+  } else if ($op == 'publish') {
+    $api = incrwd_get_api();
+    $api->published_comment($comment->cid);
   }
 }
